@@ -64,26 +64,22 @@ int btn4 = ose[9];
 //     Serial.print("Button 3 : "); Serial.print(btn3);
 //     Serial.print("Button 4 : "); Serial.print(btn4);
 
-//        MAX SPEED L1 R1
-  if( L1 == 0 )
- Y_osa = 1023;      
-  if( R1 == 0 )  
- Y_osa = 0;   
+ 
                                                               // MOTOR
                                                               
   if (Y_osa < 470) {
     digitalWrite(dirAPin,HIGH);
       digitalWrite(dirBPin,LOW);
     // Convert the declining Y-axis readings for going backward from 470 to 0 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(Y_osa, 470, 0, 0, 255);
-    motorSpeedB = map(Y_osa, 470, 0, 0, 255);
+    motorSpeedA = map(Y_osa, 470, 0, 0, 200);
+    motorSpeedB = map(Y_osa, 470, 0, 0, 200);
   }
   else if (Y_osa > 550) {
     digitalWrite(dirAPin,LOW);
       digitalWrite(dirBPin,HIGH);
     // Convert the increasing Y-axis readings for going forward from 550 to 1023 into 0 to 255 value for the PWM signal for increasing the motor speed
-    motorSpeedA = map(Y_osa, 550, 1023, 0, 255);
-    motorSpeedB = map(Y_osa, 550, 1023, 0, 255);
+    motorSpeedA = map(Y_osa, 550, 1023, 0, 200);
+    motorSpeedB = map(Y_osa, 550, 1023, 0, 200);
   }
   // If joystick stays in middle the motors are not moving
   else {
@@ -93,7 +89,7 @@ int btn4 = ose[9];
   // X-axis used for left and right control
   if (X_osa < 470) {
     // Convert the declining X-axis readings from 470 to 0 into increasing 0 to 255 value
-    int xMapped = map(X_osa, 470, 0, 0, 255);
+    int xMapped = map(X_osa, 470, 0, 0, 200);
     // Move to left - decrease left motor speed, increase right motor speed
     motorSpeedA = motorSpeedA - xMapped;
     motorSpeedB = motorSpeedB + xMapped;
@@ -101,19 +97,19 @@ int btn4 = ose[9];
     if (motorSpeedA < 0) {
       motorSpeedA = 0;
     }
-    if (motorSpeedB > 255) {
-      motorSpeedB = 255;
+    if (motorSpeedB > 200) {
+      motorSpeedB = 200;
     }
   }
   if (X_osa > 550) {
     // Convert the increasing X-axis readings from 550 to 1023 into 0 to 255 value
-    int xMapped = map(X_osa, 550, 1023, 0, 255);
+    int xMapped = map(X_osa, 550, 1023, 0, 200);
     // Move right - decrease right motor speed, increase left motor speed
     motorSpeedA = motorSpeedA + xMapped;
     motorSpeedB = motorSpeedB - xMapped;
     // Confine the range from 0 to 255
-    if (motorSpeedA > 255) {
-      motorSpeedA = 255;
+    if (motorSpeedA > 200) {
+      motorSpeedA = 200;
     }
     if (motorSpeedB < 0) {
       motorSpeedB = 0;
@@ -126,6 +122,22 @@ int btn4 = ose[9];
   if (motorSpeedB < 70) {
     motorSpeedB = 0;
   }
+  //        MAX SPEED L1 R1
+  if( L1 == 0 ){
+      digitalWrite(dirAPin,HIGH);
+      digitalWrite(dirBPin,LOW);
+      motorSpeedA = 255;
+      motorSpeedB = 255;
+  }
+
+  if( R1 == 0 ){
+      digitalWrite(dirAPin,LOW);
+      digitalWrite(dirBPin,HIGH);
+      motorSpeedA = 255;
+      motorSpeedB = 255;
+        
+  }
+  
   analogWrite(pwmAPin, motorSpeedA); // Send PWM signal to motor A
   analogWrite(pwmBPin, motorSpeedB); // Send PWM signal to motor B   
 
