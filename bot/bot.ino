@@ -1,18 +1,16 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-//#include <Servo.h>
+#include <Servo.h>
 RF24 radio(9, 10); // CE, CSN
 const byte addresses[6] = {"00001"};
-//Servo myServo;
-const int dirAPin = 7;  //     LIJEVI MOTOR     // define pin used to control rotational direction of motor A
+Servo myServo;
+const int dirAPin = 7;  //     LEFT MOTOR     // define pin used to control rotational direction of motor A
 const int pwmAPin = 6;                          // define pin for PWM used to control rotational speed of motor A
-const int dirBPin = 4;  //     DESNI MOTOR      // define pin used to control rotational direction of motor B
+const int dirBPin = 4;  //     RIGHT MOTOR      // define pin used to control rotational direction of motor B
 const int pwmBPin = 5;                          // define pin for PWM used to control rotational speed of motor B
 const int snsAPin = 0;                          // define pin for detecting current of motor A
 const int snsBPin = 1;                         // define pin for detecting current of motor B
-int brzinaA;
-int brzinaB;
 int motorSpeedA = 0;
 int motorSpeedB = 0;
 int ose[10];
@@ -28,10 +26,11 @@ void setup() {
   pinMode(pwmAPin, OUTPUT);   // set pwmAPin to output mode
   pinMode(dirBPin, OUTPUT);   // set dirBPin to output mode
   pinMode(pwmBPin, OUTPUT);   // set pwmBPin to output mode
-//  myServo.attach(2);
+  myServo.attach(3);
   radio.begin();
   radio.openReadingPipe(0, addresses); // 00001
   radio.setPALevel(RF24_PA_MIN);
+  myServo.write(125);
 }
 int X_osa;
 int Y_osa;
@@ -41,21 +40,23 @@ void loop() {
     radio.read(&ose,sizeof(ose));
     X_osa = ose [1];
     Y_osa = ose [0];  
-int Xservo = ose [2]; 
+//int Xservo = ose [3]; 
 int L1 = ose[4];
 int R1 = ose[5];
 int btn1 = ose[5];
 int btn2 = ose[7];
 int btn3 = ose[8];
-int btn4 = ose[9];      
+int btn4 = ose[9];   
+int pos = map(ose[3],0,1023,0,180);
+myServo.write(pos);   
           //                                            
           // ose[3] is not being used
           //
-//     Serial.print("POLOZAJ JOYSTICKA  : ");
+//     Serial.print("JOYSTICK POSITION : ");
 //     Serial.print(X_osa);
 //     Serial.print("    ");
 //     Serial.println(Y_osa);
-//     Serial.print("POLOZAJ SERVA  : ");
+//     Serial.print("SERVO POSITION  : ");
 //     Serial.print(Xservo);
 //     Serial.print("Button L1 : "); Serial.print(L1);
 //     Serial.print("Button R1 : "); Serial.print(R1);
@@ -149,4 +150,3 @@ else {
   analogWrite(pwmBPin, 0); // Send PWM signal to motor B   
   }
 }
-
